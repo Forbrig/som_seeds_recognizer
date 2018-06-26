@@ -3,9 +3,7 @@ from util import most_common
 from math import e
 import time
 
-'''
-Classe principal que contêm a grade de neurônios, faz o treino e reconhece digitos
-'''
+# neuron grid
 class Grade:
     '''
     Construtor
@@ -56,7 +54,6 @@ class Grade:
     def reconhece_lista(self, lista_de_teste):
         hits = 0
         for i in lista_de_teste:
-            #   i = [matriz, numero_que_a_matrix_representa]
             d = self.reconhece_digito(i[0])
             if d == i[1]:
                 hits += 1
@@ -174,18 +171,6 @@ class Grade:
         return grade
 
     '''
-    Função para imprimir a grade no terminal. Não está sendo usada já que está
-    montando as imagens e as grades são muito grandes.
-    '''
-    def print_grade(self):
-        for i in self.grade:
-            for j in i:
-                print(j.pesos)
-                print()
-            print(20 * "-")
-
-
-    '''
     Função que encontra o BMU.
     Encontra a menor diferença da soma dos pesos (ditância euclidiana) entre a
     entrada e cada neurônio da grade.
@@ -200,12 +185,10 @@ class Grade:
                     melhor = ((i, j), sd)
         return melhor
 
-
     '''
     Função para pegar os 8 vizinhos de um neurônio. Recebe os indices da matriz
     e retorna a lista de vizinhos.
     '''
-    #   pos = (i, j)
     def vizinhos(self, pos):
         vizinhos = []
         tam_grade = self.tam_grade

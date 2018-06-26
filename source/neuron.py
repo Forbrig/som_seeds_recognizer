@@ -17,7 +17,6 @@ class Neuronio:
             #   Gera a grade de pesos do neurônio com peso 1
             self.pesos = np.array(tamanho[0] * [tamanho[1] * [1]])
 
-
     '''
     Função que gera a grade de pesos do neurônio com pesos aleatórios.
     '''
@@ -38,16 +37,6 @@ class Neuronio:
                  random.uniform(0, 1),
                  random.uniform(0, 1)]
         return np.array([lista])
-
-
-    '''
-    Função para imprimir os pesos. Não está sendo usada.
-    '''
-    def print_pesos(self):
-        for i in self.pesos:
-            for j in i:
-                print("%.2f" %j, end=" ")
-            print()
 
 
     '''
