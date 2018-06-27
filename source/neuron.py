@@ -2,24 +2,16 @@ import random
 from util import *
 import numpy as np
 
-class Neuronio:
-    '''
-    Construtor.
-    Classe que guarda a grade de pesos.
-    Pode iniciar os neurônios com pesos aleatórios entre 0 e 1 ou todos os pesos
-    com valor 1.
-    '''
+# neuron class
+class neuron:
     def __init__(self, tamanho, aleatorio):
         self.tamanho = tamanho
         if aleatorio == True:
             self.pesos = self.pesos_aleatorios(tamanho)
-        else:#
-            #   Gera a grade de pesos do neurônio com peso 1
+        else:
             self.pesos = np.array(tamanho[0] * [tamanho[1] * [1]])
 
-    '''
-    Função que gera a grade de pesos do neurônio com pesos aleatórios.
-    '''
+    # generate random wights
     def pesos_aleatorios(self, tamanho):
         pesos = []
         for i in range(tamanho[0]):
@@ -38,10 +30,6 @@ class Neuronio:
                  random.uniform(0, 1)]
         return np.array([lista])
 
-
-    '''
-    Função que calcula a distância (diferença) entre dois neurônios. faz a distancia
-    soma da distância euclidiana de todos os índices.
-    '''
+    # calculate the distance between 2 neurons (euclidian distance)
     def soma_de_pesos(self, entrada):
         return sum(sum((entrada - self.pesos) ** 2))

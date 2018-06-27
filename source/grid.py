@@ -3,18 +3,9 @@ from util import most_common
 from math import e
 import time
 
-# neuron grid
-class Grade:
-    '''
-    Construtor
-    Recebe como parâmetros, respectivamente
-        - Tamanho da grade de neurônios
-        - Tamanho do bloco de entrada
-        - Taxa de aprendizado
-        - Decrescimento da daxa de aprendizado (linear em cada iteração)
-        - Sigma da função de vizinhança
-        - Decrecimento do Sigma (linear em cada iteração)
-    '''
+# neuron grid:
+# size of neuron grid, size of input, learn rate, learn rate decrease, neighbor sigma, neighbor sigma decrease
+class grid:
     def __init__(self, tam_grade, tam_entrada, alpha, taxa, sigma, s_taxa):
         self.taxa = taxa
         self.sigma = sigma
@@ -27,14 +18,8 @@ class Grade:
         self.neighbors_size = 8
         self.rec_grid = None
 
-    '''
-    Função que reconhece um único dígito.
-    Recebe como parâmetro o bloco de entrada (matriz) que representa um dígito e
-    retorna o número reconhecido a partir dela. Para isso, encontra o BMU para a
-    entrada e tenta pegar o valor no dicionário de reconhecimento do neurônio
-    que reconheceu. Se não conseguir é um erro.
-    '''
-    def reconhece_digito(self, entrada):
+    # recognize (classify) input
+    def classify(self, entrada):
         #   Encontra o BMU
         indice = self.reconhece2(entrada)[0]
 
@@ -46,26 +31,18 @@ class Grade:
             d = -1
         return d
 
-    '''
-    Função que faz o reconhecimento de uma lista de entradas. Faz a contagem de
-    acertos e retorna a porcentagem dos mesmos. As entradas contem o número que
-    representam (indice 1) para verificar se reconheceu corretamente.
-    '''
+    # Calculating hit rate of a input list
     def reconhece_lista(self, lista_de_teste):
         hits = 0
         for i in lista_de_teste:
-            d = self.reconhece_digito(i[0])
+            d = self.classify(i[0])
             if d == i[1]:
                 hits += 1
         #   Retorna a porcentagem de acertos
         return ((hits / len(lista_de_teste)) * 100)
 
-    '''
-    Função que gera a grade de reconhecimento. Recebe como parâmetro uma lista
-    de entradas para gerar a grade. Faz o reconhecimento de toda a entrada e
-    deixa como reconhecimento final de cada neurônio o numero que foi reconhecido
-    com maior frequência.
-    '''
+    # generate the recognizer grid, the input is a list of examples
+    # that tells the neuron which class he most recognize or is more like
     def grade_de_reconhecimento(self, lista_de_teste):
         desenhar = {}
         # Reconhece a entrada
@@ -81,17 +58,12 @@ class Grade:
 
         self.rec_grid = desenhar
 
-    '''
-    Retorna o neurônio que reconhece a entrada, que é o BMU para a entrada.
-    '''
+
+    # return the BMU for that input
     def reconhece2(self, entrada):
-        #   Retorna o BMU para a entrada
         return self.melhor_neuronio(entrada)
 
-    '''
-    Função que faz o treinamento para uma lista de entradas.
-    Chama a função iteração() para cada item da lista.
-    '''
+    # do the training for a input list
     def treinar(self, entrada_de_treino):
         alpha = self.alpha
         c = 0
@@ -102,30 +74,20 @@ class Grade:
             c += 1
         print("%d/%d" %(c, a))
 
-
     def repesa_neuronio(self, indice_neuronio, entrada, alpha):
         neuronio = self.grade[indice_neuronio[0]][indice_neuronio[1]]
         return neuronio.pesos + self.vizinhanca(indice_neuronio) * alpha * (entrada - neuronio.pesos)
 
-    '''
-    Função que faz o treino para uma única entrada.
-    Encontra o BMU e repesa toda a vizinhança. Neste caso, como a vizinhança é
-    toda a grade de neurônios, o próprio BMU também é atualizado. Também é possível
-    usar a vizinhança como os 8 neurônios ao redor do BMU, trocando a função vizinhos2()
-    por vizinhos().
-    '''
+    # do the training for a single input
+    # update the BMU and all his neighbors
     def iteracao(self, entrada, alpha):
         #   Encontra o BMU
         self.BMU = self.melhor_neuronio(entrada)
-
         #   Repesa a vizinhança
         for i in self.vizinhos(self.BMU[0]):
             self.grade[i[0]][i[1]].pesos = self.repesa_neuronio((i[0], i[1]), entrada, alpha)
 
-    '''
-    Função que retorna a lista de neurônios vizinhos do BMU, neste caso, a grade
-    toda.
-    '''
+    # return a list of neighbors of a neuron
     def vizinhos2(self, x):
         l = [x]
         for i in range(self.tam_grade[0]):
@@ -134,47 +96,25 @@ class Grade:
         self.neighbors_size = len(l)
         return l
 
-    '''
-    Função de vizinhança (phi).
-    Calcula a vizinhança utilizando o sigma como o tamanho da grade.
-    Ver a função vizinhanca2() abaixo.
-    '''
+    # neighbor function
+    # calculate using sigma
     def vizinhanca(self, indice_neuronio):
         neuronio = self.grade[indice_neuronio[0]][indice_neuronio[1]]
         melhor = self.grade[self.BMU[0][0]][self.BMU[0][1]]
         S = neuronio.soma_de_pesos(melhor.pesos)
         return e ** ((-(S ** 2)) / (2 * ((self.tam_entrada[0] * self.tam_entrada[1]) ** 2)))
 
-    '''
-    Função de vizinhança (phi).
-    Calcula o valor de vizinhança utilizando o sigma da grade que é decrementado
-    durante as iterações.
-    '''
-    def vizinhanca2(self, indice_neuronio):
-        #   Calcula a distância euclidiana na grade entre o neuronio atual e o BMU
-        melhor = self.grade[self.BMU[0][0]][self.BMU[0][1]]
-        S = dist_eclidiana(indice_neuronio, self.BMU[0])
-
-        #   Retorna o cálculo de vizinhança
-        return e ** ((-(S ** 2)) / (2 * ((self.sigma) ** 2)))
-
-    '''
-    Função que gera a grade de neurônios inicial com pesos aleatórios.
-    '''
+    # generate the inital grid of neurons with random weights
     def grade_aleatoria(self, tam_grade, tam_entrada):
         grade = []
         for i in range(tam_grade[0]):
             linha = []
             for j in range(tam_grade[1]):
-                linha.append(Neuronio(tam_entrada, True))
+                linha.append(neuron(tam_entrada, True))
             grade.append(linha)
         return grade
 
-    '''
-    Função que encontra o BMU.
-    Encontra a menor diferença da soma dos pesos (ditância euclidiana) entre a
-    entrada e cada neurônio da grade.
-    '''
+    # find BMU: smallest euclidian distance betwen the input and all the neurons
     def melhor_neuronio(self, entrada):
         tam_grade = self.tam_grade
         melhor = ((0, 0), self.grade[0][0].soma_de_pesos(entrada))
@@ -185,10 +125,7 @@ class Grade:
                     melhor = ((i, j), sd)
         return melhor
 
-    '''
-    Função para pegar os 8 vizinhos de um neurônio. Recebe os indices da matriz
-    e retorna a lista de vizinhos.
-    '''
+    # return the neighbors of a neuron in a list
     def vizinhos(self, pos):
         vizinhos = []
         tam_grade = self.tam_grade

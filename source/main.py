@@ -7,25 +7,24 @@ from util import *
 
 ########################## CONFIG ##########################
 
-carregar_treino = "output/toda-entrada.tra.out"         # Arquivo de treino armazenado anteriormente
-treinar         = "input/seeds_dataset.txt"           # Arquivo de entrada para treinar
-teste_de_acerto = "input/seeds_dataset.txt"         # Arquivo de entrada para testar taxa de acerto
-teste_de_treino = "input/seeds_dataset.txt"           # Arquivo de entrada gerar a grade de reconhecimento
-n_iter          = 20                                     # Quantidade de iterações de treino
+treinar         = "input/train.in" # dataset for training
+teste_de_treino = "input/train.in"# data set to generate the recognizer grid
+teste_de_acerto = "input/test.in" # dataset to test the hit rate
 
-TREINAR                         = True
-GERAR_GRADE_RECONHECIMENTO      = True
-CALCULAR_TAXA_ACERTOS           = True
+n_iter          = 20 # number of iterations
 
-GRID_SIZE_I                     = 6
-GRID_SIZE_J                     = 6
+train           = True
+recognizer_grid = True
+hit_rate        = True
 
-ALPHA_INICIAL                   = 0.1
-DECRE_ALPHA                     = 0.00009
+GRID_SIZE_I     = 4
+GRID_SIZE_J     = 4
 
-SIGMA_INICIAL                   = 2
-DECRE_SIGMA                     = 0.0015
-###############################################################################
+ALPHA_INICIAL   = 0.2
+DECRE_ALPHA     = 0.00009
+
+SIGMA_INICIAL   = 2
+DECRE_SIGMA     = 0.0015
 
 t0 = time.time()
 print("Reading input")
@@ -36,7 +35,6 @@ for i in aux_entrada:
     entrada_acertos.append([i, aux_rotulo[ind]])
     ind += 1
 
-
 entrada_treino = read_file(treinar)
 aux_entrada, aux_rotulo = read_file(teste_de_treino)
 entrada_teste = []
@@ -45,13 +43,10 @@ for i in aux_entrada:
     entrada_teste.append([i, aux_rotulo[ind]])
     ind += 1
 
+print("Generating neuron grid...")
+g = grid((GRID_SIZE_I, GRID_SIZE_J), (1, 7), ALPHA_INICIAL, DECRE_ALPHA, SIGMA_INICIAL, DECRE_SIGMA)
 
-print("Generating neuron grid")
-g = Grade((GRID_SIZE_I, GRID_SIZE_J), (1, 7), ALPHA_INICIAL, DECRE_ALPHA, SIGMA_INICIAL, DECRE_SIGMA)
-#def __init__(self, tam_grade, tam_entrada, alpha, taxa, sigma, s_taxa):
-
-
-if TREINAR:
+if train:
     print("Training")
     ti = time.time()
     for i in range(n_iter):
@@ -63,13 +58,13 @@ if TREINAR:
     print()
     print("Training time: %fs"%(tf - ti))
 
-if GERAR_GRADE_RECONHECIMENTO:
+if recognizer_grid:
     print("Generating recognizer grid")
     g.grade_de_reconhecimento(entrada_teste)
     plot_grid(g.rec_grid, GRID_SIZE_I, GRID_SIZE_J)
 
 
-if CALCULAR_TAXA_ACERTOS:
+if hit_rate:
     print("Calculating hit rate")
     taxa_de_acerto = g.reconhece_lista(entrada_acertos)
     print("Hit rate: %.4f" %(taxa_de_acerto))

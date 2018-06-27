@@ -27,7 +27,7 @@ def read_file(path):
 
     return ([_features, _class])
 
-# plot neuron map
+# plot neuron map, with colors
 def plot_grid(grid, GRID_SIZE_I, GRID_SIZE_J):
     print(grid)
     kama_x = []
@@ -53,9 +53,6 @@ def plot_grid(grid, GRID_SIZE_I, GRID_SIZE_J):
             else:
                 none_x.append(x)
                 none_y.append(y)
-
-    #plt.scatter(c='blue', label = '3')
-
     plt.scatter(kama_x, kama_y, c = 'blue', label = 'Kama')
     plt.scatter(rosa_x, rosa_y, c = 'red', label = 'Rosa')
     plt.scatter(cana_x, cana_y, c = 'green', label = 'Canadian')
@@ -64,15 +61,10 @@ def plot_grid(grid, GRID_SIZE_I, GRID_SIZE_J):
     plt.legend(loc = 'upper center', bbox_to_anchor=(0.5, -0.05), ncol = 4)
     plt.show()
 
-
-'''
-Função de distância euclidiana entre dois pontos.
-'''
+# euclidian distance
 def dist_eclidiana(a, b):
     return ((a[0] - b[0])**2 + (a[1] - b[1])**2)**(1/2)
 
-'''
-Função que retorna o item mais frequente em uma lista.
-'''
+# most common item on a list
 def most_common(lst):
     return max(set(lst), key = lst.count)
