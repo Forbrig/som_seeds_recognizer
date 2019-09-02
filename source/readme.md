@@ -1,14 +1,14 @@
-# Antes de executar o programa algumas dependências devem estar instaladas:
+# Needed:
 * python3
 * matplotlib
 * numpy
 
-# Executar:
-* Para executar o programa basta abrir o terminal na pasta `\source` e digitar:
+# Run:
+* Run under the `\source` folder:
 $ python3 main.py
 
-# Entrada:
-* Para modificar a entrada basta acessar a pasta `\source\input` e modificar os arquivos:
+# Input:
+* You can find the inputs in `\source\input`:
 > train.in
 > label_train.in
 > test.in
